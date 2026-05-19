@@ -1,0 +1,8 @@
+{
+  "name": "temp",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "mqtt": "^5.15.0"
+  }
+}
