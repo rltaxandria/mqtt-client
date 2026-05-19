@@ -1,6 +1,6 @@
 import * as mqtt from "mqtt";
 
-const client = mqtt.connect("mqtt://192.168.0.32:1883");
+const client = mqtt.connect("mqtt://192.168.0.99:1883");
 const state = {
   then: 0,
   now: 0,
@@ -8,25 +8,9 @@ const state = {
 }
 
 client.on("connect", () => {
-  // getValue(`board1`, `StirlingCooler`, `mode_setting`);
-  // setValue(`board1`, `StirlingCooler`, `mode_setting`, 'shutdown');
+  getValue("power", "fuse1_enabled");
 
-  // getValue(`board1`, `TurboPump`, `ActualSpdRPM`);
-  getValue(`board1`, `Valves`, `Valve1`);
-  getValue(`board1`, `Valves`, `Valve2`);
-  getValue(`board1`, `Valves`, `Valve3`);
-  getValue(`board1`, `Valves`, `Valve4`);
-  getValue(`board1`, `Valves`, `Valve5`);
-  getValue(`board1`, `Valves`, `Valve6`);
-  getValue(`board1`, `Valves`, `Valve7`);
-  // getValue(`board1`, `Gauge`, `PressureValue`);
-  // getValue(`board4`, `Amplifier`, `AmplifierState1`);
-
-  // getValue(`board1`, `Motors`, `BallPos`);
-  // getValue(`board1`, `Motors`, `BallActualPos`);
-  // getValue(`board1`, `Motors`, `BallError`);
-  // setValue(`board1`, `Motors`, `BallPos`, true);
-
+  // Set state
   state.then = new Date().getTime();
   state.now = state.then;
 });
@@ -39,28 +23,28 @@ client.on("message", (topic, message) => {
   console.log(state.dt);
   console.log(`${topic}: ${message}`);
 
-  // client.end();
+  client.end();
 });
 
-function getValue(board, feature, param) {
-  subscribe(board, feature, param);
-  publishGet(board, feature, param);
+function getValue(board, param) {
+  subscribe(board, param);
+  publishGet(board, param);
 }
 
-function setValue(board, feature, param, value) {
-  subscribe(board, feature, param);
-  publishSet(board, feature, param, value);
+function setValue(board, param, value) {
+  subscribe(board, param);
+  publishSet(board, param, value);
 }
 
-function subscribe(board, feature, param) {
-  const baseTopic = `devices/0/boards/${board}/features/${feature}/parameters/${param}`;
+function subscribe(board, param) {
+  const baseTopic = `board/${board}/parameter/${param}/res`;
   const topic = `${baseTopic}/value`;
 
   client.subscribe(topic);
 }
 
-function publishGet(board, feature, param) {
-  const baseTopic = `devices/0/boards/${board}/features/${feature}/parameters/${param}`;
+function publishGet(board, param) {
+  const baseTopic = `board/${board}/parameter/${param}/req`;
   const topic = `${baseTopic}/cmd`;
 
   const cmd = {
@@ -70,12 +54,12 @@ function publishGet(board, feature, param) {
   client.publish(topic, JSON.stringify(cmd));
 }
 
-function publishSet(board, feature, param, value) {
-  const baseTopic = `devices/0/boards/${board}/features/${feature}/parameters/${param}`;
+function publishSet(board, param, value) {
+  const baseTopic = `boards/${board}/parameter/${param}/req`;
   const topic = `${baseTopic}/cmd`;
 
   const cmd = {
-    cmd: "put",
+    cmd: "set",
     value: value
   };
 
