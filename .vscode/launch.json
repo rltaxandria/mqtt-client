@@ -7,10 +7,18 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "App",
+            "name": "Prc",
             "internalConsoleOptions": "neverOpen",
             "console": "internalConsole",
-            "program": "${workspaceFolder}\\app.js"
+            "program": "${workspaceFolder}\\app.prc.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Cmdhub",
+            "internalConsoleOptions": "neverOpen",
+            "console": "internalConsole",
+            "program": "${workspaceFolder}\\app.cmdhub.js"
         }
     ]
 }
