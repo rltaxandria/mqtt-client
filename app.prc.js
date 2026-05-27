@@ -2,9 +2,7 @@ import * as mqtt from "mqtt";
 
 const client = mqtt.connect("mqtt://192.168.0.32:1883");
 const state = {
-    then: 0,
     now: 0,
-    dt: 0,
     interval1: null,
     interval2: null,
 
@@ -23,36 +21,38 @@ client.on("connect", () => {
     // getValue(`power`, `fuse${index}_voltage`);
     // getValue(`power`, `fuse${index}_current`);
 
-    for (let i = 0; i < 8; i++) {
-        const index = i + 1;
-
-        getValue(`power`, `fuse${index}_enabled`);
-        getValue(`power`, `fuse${index}_output_status`);
-        getValue(`power`, `fuse${index}_tripped_status`);
-        getValue(`power`, `fuse${index}_trip_current`);
-        getValue(`power`, `fuse${index}_voltage`);
-        getValue(`power`, `fuse${index}_current`);
-    }
-
     // Set state
-    state.then = new Date().getTime();
-    state.now = state.then;
+    state.now = new Date().getTime();
     state.interval1 = setInterval(() => {
-        state.then = new Date().getTime();
-        state.dt = state.then - state.now;
-    }, 10);
+        for (let i = 0; i < 8; i++) {
+            const index = i + 1;
+
+            getValue(`power`, `fuse${index}_enabled`);
+            getValue(`power`, `fuse${index}_output_status`);
+            getValue(`power`, `fuse${index}_tripped_status`);
+            getValue(`power`, `fuse${index}_trip_current`);
+            getValue(`power`, `fuse${index}_voltage`);
+            getValue(`power`, `fuse${index}_current`);
+        }
+    }, 100);
 
     state.interval2 = setInterval(() => {
-        if (state.sent === state.received) {
+        const then = new Date().getTime();
+        const dt = then - state.now;
+
+        if (dt > 1000) {
             console.log(``);
             console.log(`SENT: ${state.sent}`);
             console.log(`RECEIVED: ${state.received}`);
             console.log(`SCORE: ${Math.round(state.received / state.sent * 100)}`);
-            console.log(`TIME: ${state.dt}`);
+            console.log(`TIME: ${dt}`);
+            console.log(``);
 
-            client.end();
             clearInterval(state.interval1);
             clearInterval(state.interval2);
+
+            client.end();
+            process.exit(0);
         }
     }, 10);
 });
@@ -63,9 +63,9 @@ client.on("message", (topic, message) => {
     const json = JSON.parse(message.toString());
 
     if (json.error) {
-        console.error(state.dt, `${topic} => ${json.error}`);
+        console.error(`${topic} => ${json.error}`);
     } else {
-        console.log(state.dt, `${topic} => ${json.value}`);
+        console.log(`${topic} => ${json.value}`);
     }
 });
 
