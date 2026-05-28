@@ -11,36 +11,56 @@ const state = {
 }
 
 client.on("connect", () => {
-    // const index = 5;
+    const index = 3;
+    // setValue(`power`, `fuse${index}_enabled`, false);
+    // setValue(`power`, `fuse${index}_trip_current`, 2000);
     // setValue(`power`, `fuse${index}_enabled`, true);
 
-    // getValue(`power`, `fuse${index}_enabled`);
-    // getValue(`power`, `fuse${index}_output_status`);
-    // getValue(`power`, `fuse${index}_tripped_status`);
-    // getValue(`power`, `fuse${index}_trip_current`);
-    // getValue(`power`, `fuse${index}_voltage`);
-    // getValue(`power`, `fuse${index}_current`);
+    getValue(`power`, `fuse${index}_enabled`);
+    getValue(`power`, `fuse${index}_output_status`);
+    getValue(`power`, `fuse${index}_tripped_status`);
+    getValue(`power`, `fuse${index}_trip_current`);
+    getValue(`power`, `fuse${index}_voltage`);
+    getValue(`power`, `fuse${index}_current`);
+
+    // setValue(`source`, `flyback_enabled`, true);
+    // getValue(`source`, `flyback_enabled`);
+
+    // setValue(`comm`, `fan1_speed`, 100);
+
+    // getValue(`comm`, `fan1_speed`);
+    // getValue(`comm`, `fan1_tacho`);
+    // getValue(`comm`, `fan1_current`);
+
+    // getValue(`source`, `flyback_enabled`);
+    // getValue(`source`, `flyback_100v`);
+    // getValue(`source`, `flyback_min150v`);
+    // getValue(`source`, `filament_status`);
+
+    // setValue(`amplifier`, `amplifier17_control`, 0x300E);
+    // getValue(`amplifier`, `amplifier17_status`);
+    // getValue(`amplifier`, `amplifier17_control`);
 
     // Set state
     state.now = new Date().getTime();
     state.interval1 = setInterval(() => {
-        for (let i = 0; i < 8; i++) {
-            const index = i + 1;
+        // for (let i = 0; i < 8; i++) {
+        //     const index = i + 1;
 
-            getValue(`power`, `fuse${index}_enabled`);
-            getValue(`power`, `fuse${index}_output_status`);
-            getValue(`power`, `fuse${index}_tripped_status`);
-            getValue(`power`, `fuse${index}_trip_current`);
-            getValue(`power`, `fuse${index}_voltage`);
-            getValue(`power`, `fuse${index}_current`);
-        }
+        //     getValue(`power`, `fuse${index}_enabled`);
+        //     getValue(`power`, `fuse${index}_output_status`);
+        //     getValue(`power`, `fuse${index}_tripped_status`);
+        //     getValue(`power`, `fuse${index}_trip_current`);
+        //     getValue(`power`, `fuse${index}_voltage`);
+        //     getValue(`power`, `fuse${index}_current`);
+        // }
     }, 100);
 
     state.interval2 = setInterval(() => {
         const then = new Date().getTime();
         const dt = then - state.now;
 
-        if (dt > 1000) {
+        if (state.then === state.received || dt > 1000) {
             console.log(``);
             console.log(`SENT: ${state.sent}`);
             console.log(`RECEIVED: ${state.received}`);

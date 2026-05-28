@@ -11,43 +11,21 @@ const state = {
 }
 
 client.on("connect", () => {
-    // setValue(`board2`, `Power`, `Fuse1TripCurrent`, 2000);
-    // setValue(`board2`, `Power`, `Fuse1Enabled`, true);
-    // setValue(`board2`, `Power`, `Fuse2TripCurrent`, 2000);
-    // setValue(`board2`, `Power`, `Fuse2Enabled`, false);
-    // setValue(`board2`, `Power`, `Fuse3TripCurrent`, 2000);
-    // setValue(`board2`, `Power`, `Fuse3Enabled`, true);
-    // setValue(`board2`, `Power`, `Fuse4TripCurrent`, 2000);
-    // setValue(`board2`, `Power`, `Fuse4Enabled`, true);
-    // setValue(`board2`, `Power`, `Fuse5TripCurrent`, 2000);
-    // setValue(`board2`, `Power`, `Fuse5Enabled`, false);
-    // setValue(`board2`, `Power`, `Fuse6TripCurrent`, 2000);
-    // setValue(`board2`, `Power`, `Fuse6Enabled`, true);
-
-    // getValue(`board1`, `Gauge`, `PressureValue`);
-    // getValue(`board1`, `DiaphragmPump`, `Pumpg-Statn`);
-    // getValue(`board1`, `TurboPump`, `PumpgStatn`);
+    getValue(`board1`, `Gauge`, `PressureValue`);
+    getValue(`board1`, `DiaphragmPump`, `Pumpg-Statn`);
+    getValue(`board1`, `TurboPump`, `PumpgStatn`);
 
     // Set state
     state.now = new Date().getTime();
     state.interval1 = setInterval(() => {
-        for (let i = 0; i < 8; i++) {
-            const index = i + 1;
-
-            getValue(`board2`, `Power`, `Fuse${index}Enabled`);
-            getValue(`board2`, `Power`, `Fuse${index}TripCurrent`);
-            getValue(`board2`, `Power`, `Fuse${index}OutputStatus`);
-            getValue(`board2`, `Power`, `Fuse${index}TrippedStatus`);
-            getValue(`board2`, `Power`, `Fuse${index}Voltage`);
-            getValue(`board2`, `Power`, `Fuse${index}Current`);
-        }
+        
     }, 100);
 
     state.interval2 = setInterval(() => {
         const then = new Date().getTime();
         const dt = then - state.now;
 
-        if (dt > 1000) {
+        if (state.sent === state.received || dt > 3000) {
             console.log(``);
             console.log(`SENT: ${state.sent}`);
             console.log(`RECEIVED: ${state.received}`);
@@ -72,10 +50,8 @@ client.on("message", (topic, message) => {
     if (json.status === `ok`) {
         console.log(`${topic} => ${json.value}`);
     } else {
-        console.log(`${topic} => ${json.error}`);
+        console.error(`${topic} => ${json.message}`);
     }
-
-    // console.log(state.dt, `${topic} => ${message}`);
 });
 
 function getValue(board, feature, param) {
